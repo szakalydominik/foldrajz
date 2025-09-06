@@ -86,7 +86,6 @@
 
     .check-btn { background: #28a745; color: white; }
     .next-btn { background: #007bff; color: white; }
-    .restart-btn { background: #dc3545; color: white; margin-top: 20px; }
 
     .result {
       font-size: 1.3rem;
@@ -154,7 +153,9 @@
   <!-- Értékelés -->
   <div id="resultScreen" class="screen" style="display:none;">
     <div class="result" id="finalScore"></div>
-    <button class="restart-btn" onclick="restartGame()">Újra</button>
+    <button class="btn-img" onclick="restartGame()">
+      <img src="kepek/újra.png" alt="Újra">
+    </button>
   </div>
 
   <!-- Nagyított kép overlay -->
@@ -305,4 +306,3 @@
   </script>
 </body>
 </html>
-
