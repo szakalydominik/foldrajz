@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Európai Unió Quiz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Orbitron', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .screen {
+      text-align: center;
+      width: 100%;
+      max-width: 500px;
+      padding: 20px;
+    }
+
+    h1 {
+      color: white;
+      font-size: 2rem;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+    }
+
+    button, .btn-img {
+      margin-top: 20px;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .btn-img img {
+      max-width: 200px;
+      width: 60%;
+      transition: transform 0.2s;
+    }
+    .btn-img img:hover {
+      transform: scale(1.05);
+    }
+
+    .flag {
+      width: 400px;
+      height: 250px;
+      object-fit: cover;
+      margin-bottom: 15px;
+      cursor: pointer;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    }
+
+    input {
+      display: block;
+      width: 80%;
+      margin: 10px auto;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+
+    .game-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+    }
+
+    .game-buttons button {
+      padding: 10px 20px;
+      border-radius: 6px;
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .check-btn { background: #28a745; color: white; }
+    .next-btn { background: #007bff; color: white; }
+    .restart-btn { background: #dc3545; color: white; margin-top: 20px; }
+
+    .result {
+      font-size: 1.3rem;
+      margin-top: 20px;
+      color: white;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+    }
+
+    /* Feedback külön fonttal */
+    #feedback {
+      margin-top: 15px;
+      font-size: 1.2rem;
+      color: white;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+      font-family: Arial, sans-serif;
+    }
+
+    .overlay {
+      position: fixed;
+      display: none;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .overlay img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 8px;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 1.5rem; }
+      .btn-img img { max-width: 150px; }
+      input { font-size: 0.9rem; padding: 8px; }
+      .game-buttons button { font-size: 0.9rem; padding: 8px 15px; }
+      .flag { width: 90%; height: auto; }
+    }
+  </style>
+</head>
+<body style="background-image: url('kepek/háttér1.png');">
+
+  <!-- Kezdőképernyő -->
+  <div id="startScreen" class="screen">
+    <h1>Európai Unió Quiz</h1>
+    <button class="btn-img" onclick="startGame()">
+      <img src="kepek/start.png" alt="Start">
+    </button>
+  </div>
+
+  <!-- Játék képernyő -->
+  <div id="gameScreen" class="screen" style="display:none;">
+    <img id="flag" class="flag" src="" alt="Ország zászló" onclick="openOverlay()">
+    <input id="countryInput" placeholder="Ország neve">
+    <input id="capitalInput" placeholder="Főváros">
+    <input id="euInput" placeholder="Csatlakozás dátuma / Nem tagállam">
+    <div id="feedback"></div>
+    <div class="game-buttons">
+      <button class="check-btn" onclick="checkAnswer()">Ellenőrzés</button>
+      <button class="next-btn" onclick="nextQuestion()">Következő</button>
+    </div>
+  </div>
+
+  <!-- Értékelés -->
+  <div id="resultScreen" class="screen" style="display:none;">
+    <div class="result" id="finalScore"></div>
+    <button class="restart-btn" onclick="restartGame()">Újra</button>
+  </div>
+
+  <!-- Nagyított kép overlay -->
+  <div class="overlay" id="overlay" onclick="closeOverlay()">
+    <img id="overlayImg" src="">
+  </div>
+
+  <script>
+    const data = [
+      {orszag:"Albánia",fovaros:"Tirana",eu:"Nem tagállam"},
+      {orszag:"Andorra",fovaros:"Andorra la Vella",eu:"Nem tagállam"},
+      {orszag:"Ausztria",fovaros:"Bécs",eu:"1995"},
+      {orszag:"Belgium",fovaros:"Brüsszel",eu:"1957"},
+      {orszag:"Bosznia-Hercegovina",fovaros:"Szarajevó",eu:"Nem tagállam"},
+      {orszag:"Bulgária",fovaros:"Szófia",eu:"2007"},
+      {orszag:"Csehország",fovaros:"Prága",eu:"2004"},
+      {orszag:"Dánia",fovaros:"Koppenhága",eu:"1973"},
+      {orszag:"Egyesült Királyság",fovaros:"London",eu:"1973-2020"},
+      {orszag:"Észak-Macedónia",fovaros:"Szkopje",eu:"Nem tagállam"},
+      {orszag:"Észtország",fovaros:"Tallinn",eu:"2004"},
+      {orszag:"Fehéroroszország",fovaros:"Minszk",eu:"Nem tagállam"},
+      {orszag:"Finnország",fovaros:"Helsinki",eu:"1995"},
+      {orszag:"Franciaország",fovaros:"Párizs",eu:"1957"},
+      {orszag:"Görögország",fovaros:"Athén",eu:"1981"},
+      {orszag:"Hollandia",fovaros:"Amszterdam",eu:"1957"},
+      {orszag:"Horvátország",fovaros:"Zágráb",eu:"2013"},
+      {orszag:"Írország",fovaros:"Dublin",eu:"1973"},
+      {orszag:"Izland",fovaros:"Reykjavík",eu:"Nem tagállam"},
+      {orszag:"Lengyelország",fovaros:"Varsó",eu:"2004"},
+      {orszag:"Lettország",fovaros:"Riga",eu:"2004"},
+      {orszag:"Liechtenstein",fovaros:"Vaduz",eu:"Nem tagállam"},
+      {orszag:"Litvánia",fovaros:"Vilnius",eu:"2004"},
+      {orszag:"Luxemburg",fovaros:"Luxembourg",eu:"1957"},
+      {orszag:"Magyarország",fovaros:"Budapest",eu:"2004"},
+      {orszag:"Málta",fovaros:"Valletta",eu:"2004"},
+      {orszag:"Moldova",fovaros:"Chișinău",eu:"Nem tagállam"},
+      {orszag:"Monaco",fovaros:"(városállam)",eu:"Nem tagállam"},
+      {orszag:"Montenegró",fovaros:"Podgorica",eu:"Nem tagállam"},
+      {orszag:"Németország",fovaros:"Berlin",eu:"1957"},
+      {orszag:"Norvégia",fovaros:"Oslo",eu:"Nem tagállam"},
+      {orszag:"Olaszország",fovaros:"Róma",eu:"1957"},
+      {orszag:"Oroszország",fovaros:"Moszkva",eu:"Nem tagállam"},
+      {orszag:"Portugália",fovaros:"Lisszabon",eu:"1986"},
+      {orszag:"Románia",fovaros:"Bukarest",eu:"2007"},
+      {orszag:"San Marino",fovaros:"San Marino",eu:"Nem tagállam"},
+      {orszag:"Spanyolország",fovaros:"Madrid",eu:"1986"},
+      {orszag:"Svájc",fovaros:"Bern",eu:"Nem tagállam"},
+      {orszag:"Svédország",fovaros:"Stockholm",eu:"1995"},
+      {orszag:"Szerbia",fovaros:"Belgrád",eu:"Nem tagállam"},
+      {orszag:"Szlovákia",fovaros:"Pozsony",eu:"2004"},
+      {orszag:"Szlovénia",fovaros:"Ljubljana",eu:"2004"},
+      {orszag:"Törökország",fovaros:"Ankara",eu:"Nem tagállam"},
+      {orszag:"Ukrajna",fovaros:"Kijev",eu:"Nem tagállam"},
+      {orszag:"Vatikán",fovaros:"(városállam)",eu:"Nem tagállam"}
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+    let selected = [];
+    let answeredCorrectly = false;
+
+    function startGame() {
+      document.body.style.backgroundImage = "url('kepek/háttér2.png')";
+      document.getElementById("startScreen").style.display = "none";
+      document.getElementById("gameScreen").style.display = "block";
+      selected = data.sort(() => 0.5 - Math.random()).slice(0,15);
+      currentIndex = 0;
+      score = 0;
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      let q = selected[currentIndex];
+      document.getElementById("flag").src = "kepek/" + q.orszag + ".png";
+      document.getElementById("countryInput").value = "";
+      document.getElementById("capitalInput").value = "";
+      document.getElementById("euInput").value = "";
+      document.getElementById("feedback").innerHTML = "";
+      answeredCorrectly = false;
+    }
+
+    function checkAnswer() {
+      let q = selected[currentIndex];
+      let c = document.getElementById("countryInput").value.trim();
+      let f = document.getElementById("capitalInput").value.trim();
+      let e = document.getElementById("euInput").value.trim();
+      let fb = "";
+
+      let correct = true;
+
+      if (c.toLowerCase() === q.orszag.toLowerCase()) {
+        fb += "✅ Ország<br>";
+      } else {
+        fb += "❌ Ország: " + q.orszag + "<br>";
+        correct = false;
+      }
+      if (f.toLowerCase() === q.fovaros.toLowerCase()) {
+        fb += "✅ Főváros<br>";
+      } else {
+        fb += "❌ Főváros: " + q.fovaros + "<br>";
+        correct = false;
+      }
+      if (e.toLowerCase() === q.eu.toLowerCase()) {
+        fb += "✅ EU<br>";
+      } else {
+        fb += "❌ EU: " + q.eu + "<br>";
+        correct = false;
+      }
+
+      if (correct && !answeredCorrectly) {
+        score++;
+        answeredCorrectly = true;
+      }
+
+      document.getElementById("feedback").innerHTML = fb;
+    }
+
+    function nextQuestion() {
+      if (currentIndex < selected.length - 1) {
+        currentIndex++;
+        loadQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+      document.getElementById("gameScreen").style.display = "none";
+      document.getElementById("resultScreen").style.display = "block";
+      document.getElementById("finalScore").textContent = `Pontszám: ${score} / 15`;
+    }
+
+    function restartGame() {
+      document.body.style.backgroundImage = "url('kepek/háttér1.png')";
+      document.getElementById("resultScreen").style.display = "none";
+      document.getElementById("startScreen").style.display = "block";
+    }
+
+    function openOverlay() {
+      let img = document.getElementById("flag").src;
+      document.getElementById("overlayImg").src = img;
+      document.getElementById("overlay").style.display = "flex";
+    }
+
+    function closeOverlay() {
+      document.getElementById("overlay").style.display = "none";
+    }
+  </script>
+</body>
+</html>
