@@ -142,7 +142,7 @@
   <div id="gameScreen" class="screen" style="display:none;">
     <img id="flag" class="flag" src="" alt="Ország zászló" onclick="openOverlay()">
     <input id="countryInput" placeholder="Ország neve">
-    <input id="capitalInput" placeholder="Főváros">
+    <input id="capitalInput" placeholder="Főváros / Városállam">
     <input id="euInput" placeholder="Csatlakozás dátuma / Nem tagállam">
     <div id="feedback"></div>
     <div class="game-buttons">
@@ -191,7 +191,7 @@
       {orszag:"Magyarország",fovaros:"Budapest",eu:"2004"},
       {orszag:"Málta",fovaros:"Valletta",eu:"2004"},
       {orszag:"Moldova",fovaros:"Chișinău",eu:"Nem tagállam"},
-      {orszag:"Monaco",fovaros:"(városállam)",eu:"Nem tagállam"},
+      {orszag:"Monaco",fovaros:"Városállam",eu:"Nem tagállam"},
       {orszag:"Montenegró",fovaros:"Podgorica",eu:"Nem tagállam"},
       {orszag:"Németország",fovaros:"Berlin",eu:"1957"},
       {orszag:"Norvégia",fovaros:"Oslo",eu:"Nem tagállam"},
@@ -208,7 +208,7 @@
       {orszag:"Szlovénia",fovaros:"Ljubljana",eu:"2004"},
       {orszag:"Törökország",fovaros:"Ankara",eu:"Nem tagállam"},
       {orszag:"Ukrajna",fovaros:"Kijev",eu:"Nem tagállam"},
-      {orszag:"Vatikán",fovaros:"(városállam)",eu:"Nem tagállam"}
+      {orszag:"Vatikán",fovaros:"Városállam",eu:"Nem tagállam"}
     ];
 
     let currentIndex = 0;
@@ -305,3 +305,4 @@
   </script>
 </body>
 </html>
+
